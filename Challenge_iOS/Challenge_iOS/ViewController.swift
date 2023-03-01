@@ -12,6 +12,17 @@ class ViewController: UIViewController {
     private let tableView = UITableView()
     private let loadAllButton = UIButton()
     
+    lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [loadImageView, progressbar, loadButton])
+        stackView.axis = .horizontal
+        stackView.distribution = .fill
+        stackView.alignment = .center
+        stackView.spacing = 10
+        
+        //        contentView.addSubview(stackView)
+        
+        return stackView
+    }()
     lazy var loadImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "photo"))
         imageView.contentMode = .scaleToFill
@@ -28,6 +39,9 @@ class ViewController: UIViewController {
         progressbar.trackTintColor = .systemGray4
         progressbar.progressTintColor = .blue
         progressbar.progress = 0.5
+        progressbar.snp.makeConstraints { make in
+            make.width.equalTo(150)
+        }
         return progressbar
     }()
     
@@ -36,10 +50,10 @@ class ViewController: UIViewController {
         button.setTitle("Load", for: .normal)
         button.backgroundColor = .blue
         button.layer.cornerRadius = 5
-        //        button.snp.makeConstraints { make in
-        //            make.width.equalTo(80)
-        //            make.height.equalTo(40)
-        //        }
+        button.snp.makeConstraints { make in
+            make.width.equalTo(80)
+            make.height.equalTo(40)
+        }
         button.addTarget(self, action: #selector(loadImage), for: .touchUpInside)
         return button
     }()
@@ -61,36 +75,24 @@ class ViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         view.backgroundColor = .white
-        view.addSubview(loadImageView)
-        view.addSubview(progressbar)
-        view.addSubview(loadButton)
-        loadImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
+        
+        view.addSubview(stackView)
+        
+        stackView.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-        }
-        progressbar.snp.makeConstraints { make in
-            //            make.width.equalTo(100)
-            make.top.equalTo(100)
-            make.leading.equalTo(loadImageView.snp.trailing)
-            make.trailing.equalTo(loadButton.snp.leading)
-            make.centerX.equalToSuperview()
-        }
-        loadButton.snp.makeConstraints { make in
-            make.top.equalTo(85)
-            //            make.leading.equalTo(progressbar.snp.trailing)
-            make.trailing.equalToSuperview()
+            make.leading.equalTo(5)
         }
         
     }
     
+   
     
 }
 
-class ImageCell: UITableViewCell {
-    
-}
+//class ImageCell: UITableViewCell {
+//
+//}
 
 //MARK: - 프리뷰
 import SwiftUI
