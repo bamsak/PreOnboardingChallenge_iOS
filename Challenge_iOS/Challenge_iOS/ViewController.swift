@@ -13,19 +13,14 @@ class ViewController: UIViewController{
     private let tableView = UITableView()
     private let loadAllButton = UIButton()
     
-    let count: Int = 5
+    private let count: Int = 5
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         
-        //        view.addSubview(stackView)
-        //
-        //        stackView.snp.makeConstraints { make in
-        //            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-        //            make.centerX.equalToSuperview()
-        //        }
         makeTableView()
+        makeAllButton()
     }
     
     func makeTableView() {
@@ -41,13 +36,33 @@ class ViewController: UIViewController{
         tableView.register(ImageCell.self, forCellReuseIdentifier: "imageCell")
     }
     
+    func makeAllButton() {
+        view.addSubview(loadAllButton)
+        loadAllButton.setTitle("Load All Images", for: .normal)
+        loadAllButton.backgroundColor = .systemBlue
+        loadAllButton.layer.cornerRadius = 5
+        loadAllButton.snp.makeConstraints { make in
+            make.bottom.equalTo(-50)
+            make.leading.equalTo(16)
+            //            make.trailing.equalTo(-16)
+            make.centerX.equalToSuperview()
+        }
+        loadAllButton.addTarget(self, action: #selector(allImageLoadButton), for: .touchUpInside)
+    }
+    
+    @objc func allImageLoadButton(sender: UIButton!) {
+        for index in 0..<count {
+            guard let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? ImageCell else {return}
+            cell.loadImage(sender: sender)
+        }
+    }
 }
-
+//MARK: - Extension ViewController
 extension ViewController: UITableViewDelegate{
     
 }
 
-//MARK: - Extension ViewController
+
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return count
@@ -60,88 +75,6 @@ extension ViewController: UITableViewDataSource {
     }
 }
 
-//MARK: - imageCell
-class ImageCell: UITableViewCell {
-    
-    lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [loadImageView, progressBar, loadButton])
-        stackView.axis = .horizontal
-        stackView.distribution = .fill
-        stackView.alignment = .center
-        stackView.spacing = 10
-        
-        contentView.addSubview(stackView)
-        stackView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(20)
-            $0.left.equalToSuperview().offset(20)
-            $0.right.equalToSuperview().offset(-15)
-            $0.bottom.equalToSuperview().offset(-15)
-        }
-        
-        return stackView
-    }()
-    
-    lazy var loadImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "photo"))
-        imageView.contentMode = .scaleToFill
-        imageView.snp.makeConstraints { image in
-            image.width.equalTo(120)
-            image.height.equalTo(90)
-        }
-        return imageView
-    }()
-    
-    lazy var progressBar: UIProgressView = {
-        let progressbar = UIProgressView()
-        progressbar.progressViewStyle = .default
-        progressbar.trackTintColor = .systemGray4
-        progressbar.progressTintColor = .blue
-        progressbar.progress = 0.5
-//        progressbar.snp.makeConstraints { make in
-//            make.width.equalTo(150)
-//        }
-        return progressbar
-    }()
-    
-    lazy var loadButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Load", for: .normal)
-        button.backgroundColor = .blue
-        button.layer.cornerRadius = 5
-        button.snp.makeConstraints { make in
-            make.width.equalTo(80)
-            make.height.equalTo(40)
-        }
-        button.addTarget(self, action: #selector(loadImage), for: .touchUpInside)
-        return button
-    }()
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        contentView.addSubview(stackView)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    @objc func loadImage(sender: UIButton!) {
-        self.loadImageView.image = UIImage(systemName: "photo")
-        
-        let url = URL(string: "https://picsum.photos/200/300")!
-        
-        URLSession.shared.downloadTask(with: url, completionHandler: { (location, reponse, error) -> Void in
-            if let data = try? Data(contentsOf: url) {
-                let image = UIImage(data: data)
-                
-                DispatchQueue.main.async {
-                    self.loadImageView.image = image
-                }
-            }
-        }).resume()
-    }
-}
 
 //MARK: - 프리뷰
 import SwiftUI
